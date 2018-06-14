@@ -35,21 +35,26 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if 'dist' in args.plot:
-		file = 'output/energies.dat'
+		file = 'output/dist.dat'
 
 		vals = []
 		with open(file) as f:
 			for line in f:
 				vals.append(float(line))
 
-		plt.hist(vals, facecolor='w')
+		xarray = np.arange(min(vals), max(vals), .1)
+		yarray = np.exp(-xarray**2/20) / math.sqrt(math.pi)
+
+		plt.hist(vals, facecolor='w', density=True, bins=50, histtype='stepfilled')
+		plt.plot(xarray, yarray, "--", color='r')
 		# plt.legend(loc='upper right')
-		plt.savefig('output/energies.png')
+		plt.xlim(min(vals), max(vals))
+		plt.savefig('output/dist.png')
 		plt.show()
 		plt.close()
 
 	if 'walkers' in args.plot:
-		file = 'output/energies.dat'
+		file = 'output/dist.dat'
 
 		vals = []
 		with open(file) as f:
@@ -72,6 +77,93 @@ if __name__ == '__main__':
 		plt.savefig('output/walkers.png')
 		plt.show()
 		plt.close()
+
+	if 'combined' in args.plot:
+		file = 'output/dist.dat'
+
+		vals = []
+		with open(file) as f:
+			for line in f:
+				vals.append(float(line))
+		steps = np.arange(0,len(vals))
+		avg = round(np.mean(vals),3)
+		std = round(np.std(vals)/math.sqrt(len(vals)),3)
+		avg_array = np.array([avg for i in vals])
+
+		# fig, (ax1, ax2) = plt.subplots(figsize=[18,6], sharey=True)
+		plt.figure(figsize=[20,5])
+		grid = plt.GridSpec(1, 10, wspace=0.2)
+
+		ax1 = plt.subplot(grid[0, :8])
+		ax2 = plt.subplot(grid[0, 8:], sharey=ax1)
+		plt.setp(ax2.get_yticklabels(), visible=False)
+
+		ax1.step(steps, vals, color='k', alpha=.7, linewidth=1)
+		ax1.plot(steps, avg_array, color='r', label=r'$<x>=%s \pm %s$'%(str(avg), str(std)))
+		ax1.fill_between(steps, avg_array-std, avg_array+std, color='r', alpha=.1)
+		ax2.hist(vals, facecolor='w', density=True, bins=50, histtype='stepfilled', orientation="horizontal")
+		ax2.axhline(avg, color='r')
+		ax2.set_xlabel(r'$|\psi_{0}^2|$', fontsize=20)
+		ax1.set_ylabel(r'$x$', fontsize=20)
+		ax1.set_xlabel('lattice index', fontsize=15)
+		ax1.set_xlim(min(steps), max(steps))
+		ax1.set_ylim(-4,4)
+		ax2.set_xlim(0,.6)
+		ax1.legend(loc='upper left')
+		plt.suptitle('MC Path Integral Demo (N=100)', fontsize=20)
+		plt.savefig('output/combined.png')
+		plt.show()
+		plt.close()
+
+
+	if 'animation' in args.plot:
+
+		folder = os.listdir('output/xvec/')
+		print('Plotting %s files...'%(len(folder)))
+		for file in folder:
+			vals = []
+			with open('output/xvec/' + file) as f:
+				for line in f:
+					vals.append(float(line))
+			i = file.split('x')[1].split('.csv')[0]
+
+			steps = np.arange(0,len(vals))
+			avg = round(np.mean(vals),3)
+			std = round(np.std(vals)/math.sqrt(len(vals)),3)
+			avg_array = np.array([avg for i in vals])
+
+			plt.figure(figsize=[20,5])
+			grid = plt.GridSpec(1, 10, wspace=0.2)
+
+			ax1 = plt.subplot(grid[0, :8])
+			ax2 = plt.subplot(grid[0, 8:], sharey=ax1)
+			plt.setp(ax2.get_yticklabels(), visible=False)
+
+			ax1.step(steps, vals, color='k', alpha=.7, linewidth=1, label='iteration='+str(i))
+			ax1.plot(steps, avg_array, color='r', label=r'$<x>=%s \pm %s$'%(str(avg), str(std)))
+			ax1.fill_between(steps, avg_array-std, avg_array+std, color='r', alpha=.1)
+			ax1.set_ylabel(r'$x$', fontsize=20)
+			ax1.set_xlabel('lattice index', fontsize=15)
+			ax1.set_xlim(min(steps), max(steps))
+			ax1.set_ylim(-4,4)
+
+			ax2.hist(vals, facecolor='w', density=True, bins=50, histtype='stepfilled', orientation="horizontal")
+			ax2.axhline(avg, color='r')
+			ax2.set_xlabel(r'$|\psi_{0}^2|$', fontsize=20)
+			ax2.set_xlim(0,.6)
+
+			ax1.legend(loc='upper left')
+			plt.suptitle('MC Path Integral Demo (N=100)', fontsize=20)
+			plt.savefig('output/animation/dist'+str(i)+'.png')
+			# plt.show()
+			plt.close()
+
+	if 'gif' in args.plot:
+		l = len(os.listdir("output/animation/")) - 1
+		print("Converting {} images to gif...".format(l+1))
+
+		os.system("convert -delay 0 $(for i in $(seq 0 1 %s); do echo output/animation/dist${i}.png; done) \
+			-loop 0  output/MCMC_animation.gif"%(str(l)))
 
 	if 'expected' in args.plot:
 		file1 = 'output/expected_energy.dat'
