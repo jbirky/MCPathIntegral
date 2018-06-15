@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1529038370 "writeup.tex" "writeup.pdf" "writeup" 1529038370
+["pdflatex"] 1529038370 "writeup.tex" "writeup.pdf" "writeup" 1529040499
   "/home/jess/.cache/texlive/texmf-var/web2c/pdftex/pdflatex.fmt" 1513999429 719144 4ae9faaff5c3554eaa87504ae36eca88 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map" 1463015741 1888031 5317a64a246c13fa560847c387843238 ""
@@ -68,5 +68,5 @@
   "writeup.tex" 1529038370 2636 5ef039b25cf37df9c1a0d961fe36c32c ""
   (generated)
   "writeup.log"
-  "writeup.aux"
   "writeup.pdf"
+  "writeup.aux"

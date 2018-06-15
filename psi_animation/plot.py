@@ -10,6 +10,12 @@ import math
 from math import sqrt, pi, exp
 import argparse
 
+#####################################
+# Usage:  store plots in the local directory in folder called 'output/'
+# 		in terminal run:
+# 			python plot.py dist
+# 			python plot.py gif
+#####################################
 
 if __name__ == '__main__':
 
@@ -19,7 +25,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if 'dist' in args.plot:
-		folder = 'psi_data/'
+		folder = 'output/'
 		flist = sorted(os.listdir(folder))
 		nfiles = len(flist)
 		print('Plotting %s files...'%(nfiles))
