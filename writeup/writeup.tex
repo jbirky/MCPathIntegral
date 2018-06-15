@@ -1,0 +1,78 @@
+\documentclass{article}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{float}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\begin{document}
+
+\begin{algorithm}
+\caption{MC Path Integral}\label{euclid}
+\begin{algorithmic}[1]
+	\Procedure{sampleQuantumDist}{}
+	\State $\hbar, m, k_b, \omega \gets 1$
+	\State $\theta \gets$ temperature of heat bath
+	\State $\beta \gets \hbar/k_b\theta$
+	\State $N_s \gets \#$ of steps
+	\State $N_d \gets \#$ of lattice points 
+	\State $\epsilon \gets T/N_d$ \\
+
+	\State \textcolor{gray}{// Initialize lattice}
+	\State $x \gets \{x_0, ..., x_{N_d - 1}\}$ // $x_k \sim \mathcal{N}(0,1)$
+	\State $x' \gets x$ \\
+
+	\For {$i=0,...,N_s$}
+		% \State $k \gets {\rm randInt}(0,N_d)$
+		\For {$k=0,...N_d$}
+			% \State $k_{\pm} \gets k \pm 1$
+			% \If {($k_{-} == -1$)} $k_{-} \gets N_d$ \EndIf
+			\State $x'[k] \gets x[k] + \mathcal{N}(0,1)$ \textcolor{gray}{// Proposition}
+			\State $E \gets {\rm \textbf{energy}}(x, \epsilon)$
+			\State $E' \gets {\rm \textbf{energy}}(x', \epsilon)$
+
+			\State $\pi \gets e^{\beta (E'-E)}$
+			\If {$(E' \leq E)$} 
+				\State $x[k] \gets x'[k]$
+			\Else 
+				\If {(randUniform(0,1) $\leq \pi$)} 
+					\State $x[k] \gets x'[k]$
+				\EndIf
+			\EndIf 
+		\EndFor
+	\EndFor
+	\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\Large
+\[E_{\rm path} = \frac{m}{2\epsilon} \sum^{N}_{i=1}(x_i - x_{i-1})^{2} + \frac{\epsilon}{8} m \omega \sum^{N}_{i=1} \left(x_{i-1} + x_i\right)^{2} \]
+
+\[\langle E(T) \rangle = \frac{\sum\limits_{n=0}^{\infty} E_n e^{E_n/kT}}{\sum\limits_{n=0}^{\infty} e^{E_n/kT}}
+	= \frac{\sum (n+\frac{1}{2})\hbar\omega \, e^{(n+\frac{1}{2})\hbar\omega/kT}}{\sum e^{(n+\frac{1}{2})\hbar\omega/kT}} = \frac{\hbar \omega}{2} \coth\left(\frac{\hbar\omega}{2 k T}\right) \]
+
+\Huge
+\[E = \frac{1}{2}m\dot{x}^2 + \frac{1}{2}m\omega^2x^2 \]
+
+\[E_n = \left(n + \frac{1}{2}\right) \hbar\omega \] 
+\[\]
+
+\Large
+\[\langle E \rangle = \frac{\int \mathcal{D}[x(\tau)] \left(\frac{1}{2}m\dot{x}^2 + \frac{1}{2}m\omega^2 x^2 \right) e^{-\frac{1}{\hbar}S[x]}}{\int \mathcal{D}[x(\tau)] e^{-\frac{1}{\hbar}S[x]}} \]
+
+\[\]
+\[S[x] = \int^T_0 \left[\frac{1}{2}m\left(\frac{dx}{dt}\right)^2 + \frac{1}{2}m\omega^2 x^2 \right] d\tau \]
+
+\[E_o = \lim_{T\rightarrow \infty} \frac{\int \mathcal{D}[x(\tau)] \left(\frac{1}{2}m\dot{x}^2 + \frac{1}{2}m\omega^2 x^2 \right) e^{-\frac{1}{\hbar}S[x]}}{\int \mathcal{D}[x(\tau)] e^{-\frac{1}{\hbar}S[x]}} \]
+
+\[\]
+
+\[\psi_o(x) = \left(\frac{m\omega}{\pi \hbar}\right)^{1/4} e^{-\frac{m\omega}{2\hbar}x^2} \]
+
+\end{document}
