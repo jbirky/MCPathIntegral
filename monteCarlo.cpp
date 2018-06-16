@@ -56,6 +56,7 @@ int main() {
 	// vector<double> exp = expected(dist_type);
 
 	vector<double> dist = returnDist();
+	vector<double> sample = removeAutocorrelation(dist);
 	string save = "output/dist.dat";
 	saveFileR(dist, save);
 
@@ -107,21 +108,26 @@ vector<double> returnDist() {
 			km = Nd;
 		}
 		vector<double> xprop = x;
-		xprop[k] = x[k] + getRandGaussian(1)[0];
+		if ((k == 0) or (k == Nd)) {
+			xprop[0] = x[0] + getRandGaussian(1)[0];
+			xprop[Nd] = x[Nd] + getRandGaussian(1)[0];
+		} else {
+			xprop[k] = x[k] + getRandGaussian(1)[0];
+		}
 
 		double Ecurr = energy(x);
 		double Eprop = energy(xprop);
 
-		cout<<Ecurr<<" "<<Eprop<<" "<<(Eprop-Ecurr)/T<<" "<<exp((Eprop-Ecurr)/T)<<endl;
+		// cout<<Ecurr<<" "<<Eprop<<" "<<(Eprop-Ecurr)/T<<" "<<exp((Eprop-Ecurr)/T)<<endl;
 
 		// Metropolis-Hastings algorithm
 		if (Eprop < Ecurr) {
-			x[k] = xprop[k];
+			x = xprop;
 			energies[i] = Eprop;
 			accept += 1;
 		} else {
 			if (getRandUniform(0,1) < exp(Eprop-Ecurr)) {
-				x[k] = xprop[k];
+				x = xprop;
 				energies[i] = Eprop;
 				accept += 1;
 			} else {
@@ -137,73 +143,6 @@ vector<double> returnDist() {
 
 	return x;
 }
-
-// double x(int i) {
-
-// 	double xval = x0 + DEL_T*i;
-// 	return xval;
-// }
-
-
-// double harmonicAction(vector<double> x) {
-
-// 	double action = 0;
-// 	for (int i=1; i<Nd; i++) {
-// 		action += m/(2*DEL_T) * (x[i] - x[i-1]) + DEL_T*m*pow(w,2)/2*pow((x[i-1] +  x[i])/2, 2);
-// 	}
-
-// 	return action;
-// }
-
-
-// vector<double> sampleEnergyDist(double T) {
-
-// 	vector<double> energies(Ns,0);
-// 	vector<double> vec(Nd,0);
-// 	vector<double> prop;
-// 	vector<double> randvec;
-// 	double Ecurr;
-// 	double Eprop;
-// 	double acc_prob;
-// 	double BETA = -1*T/h;	
-
-// 	// counters
-// 	int accept = 0;
-// 	int reject = 0;
-
-// 	for (int i=0; i<Ns; i++) {
-
-// 		randvec = getRandGaussian(Nd);
-
-// 		prop  = vec_sum(vec, randvec);
-// 		Ecurr = harmonicAction(vec);
-// 		Eprop = harmonicAction(prop);
-
-// 		// Metropolis-Hastings algorithm
-// 		if (Eprop < Ecurr) {
-// 			vec = prop;
-// 			energies[i] = Eprop;
-// 			accept += 1;
-// 		} else {
-// 			acc_prob = exp(BETA*(Eprop-Ecurr));
-// 			double randn = getRandUniform(0,1);
-// 			if (randn < acc_prob) {
-// 				vec = prop;
-// 				energies[i] = Eprop;
-// 				accept += 1;
-// 			} else {
-// 				energies[i] = Ecurr;
-// 				reject += 1;
-// 			}
-// 		}
-// 	}
-// 	double accept_rate = ((double) accept)/ ((double) Ns);
-
-// 	cout<<accept_rate<<" steps accepted"<<endl;
-
-// 	return energies;
-// }
-
 
 vector<double> removeAutocorrelation(vector<double> vec) {
 

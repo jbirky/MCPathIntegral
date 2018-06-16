@@ -12,7 +12,7 @@ import argparse
 
 #####################################
 # Usage:  store plots in the local directory in folder called 'output/'
-# 		in terminal run:
+#		  in terminal run:
 # 			python plot.py dist
 # 			python plot.py gif
 #####################################
